@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ref, push } from '../firebase/database'; // import 'push' from firebase
+import { ref, push } from 'firebase/database'; // import 'push' from firebase
 import { database } from '../firebase'; // use the database from firebase.js
 
 const Feedback = () => {

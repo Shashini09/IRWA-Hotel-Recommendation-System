@@ -105,7 +105,7 @@ function Login() {
               }}
               onClick={() => window.open(`https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotel.hotel)}`, "_blank")}
             >
-              <p style={{ color: '#595959', fontWeight: 'bold' }}>Recommendation Score: {hotel[1].toFixed(2)}</p>
+                <p>Star Rating: {hotel.starrating} ★</p> {/* Display the star rating */}
             </Card>
             
             ))}

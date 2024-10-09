@@ -9,6 +9,52 @@ import pickle
 with open('contentsearchhotels.pkl', 'rb') as file:
     hotel = pickle.load(file)
 
+
+
+room_no=[
+     ('king',2),
+   ('queen',2), 
+    ('triple',3),
+    ('master',3),
+   ('family',4),
+   ('murphy',2),
+   ('quad',4),
+   ('double-double',4),
+   ('mini',2),
+   ('studio',1),
+    ('junior',2),
+   ('apartment',4),
+    ('double',2),
+   ('twin',2),
+   ('double-twin',4),
+   ('single',1),
+     ('diabled',1),
+   ('accessible',1),
+    ('suite',2),
+    ('one',2)
+   ]
+
+def calc():
+    guests_no=[]
+    for i in range(hotel.shape[0]):
+        temp=hotel['roomtype'][i].lower().split()
+        flag=0
+        for j in range(len(temp)):
+            for k in range(len(room_no)):
+                if temp[j]==room_no[k][0]:
+                    guests_no.append(room_no[k][1])
+                    flag=1
+                    break
+            if flag==1:
+                break
+        if flag==0:
+            guests_no.append(2)
+    hotel['guests_no']=guests_no
+
+calc()
+
+
+
 # Function to search hotels based on requirements
 def requirementbased(city, number, features):
     hotel['city'] = hotel['city'].str.lower()

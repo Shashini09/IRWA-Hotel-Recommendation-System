@@ -107,17 +107,69 @@ def popular():
 
 
 
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 @app.route('/search_hotels', methods=['POST'])
 def search_hotels():
-    # Get data from the POST request (assume JSON format)
     data = request.json
-    city = data['city']
-    number = data['number']
-    features = data['features']
+    city = data.get('city', '').lower()
+    number = data.get('number', 1)
+    features = data.get('features', '').lower()
     
-    # Get hotel search results
+    try:
+        number = int(number)
+    except ValueError:
+        number = 1
+        logging.warning(f"Invalid number provided: {data.get('number')}. Defaulting to 1.")
+    
+    logging.debug(f"Searching hotels in {city} for {number} guests with features: {features}")
+    
     results = requirementbased(city, number, features)
+    logging.debug(f"Found {len(results)} matching hotels.")
+    
     return jsonify(results)
+
+
+def get_countries_and_cities():
+    countries = hotel_df2['country'].unique().tolist()
+    cities = hotel_df2[['country', 'city']].drop_duplicates().to_dict(orient='records')
+    return countries, cities
+
+# Get hotel recommendations based on country and city
+def recommend_hotels(country, city):
+    filtered_hotels = hotel_df2[(hotel_df2['country'] == country) & (hotel_df2['city'] == city)]
+    if filtered_hotels.empty:
+        return []
+    recommended_hotels = filtered_hotels[['hotelname', 'roomtype']].to_dict(orient='records')
+    return recommended_hotels
+
+@app.route('/get_countries_and_cities', methods=['GET'])
+def countries_and_cities():
+    try:
+        countries, cities = get_countries_and_cities()
+        return jsonify({'status': 'success', 'countries': countries, 'cities': cities})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/recommend_new', methods=['POST'])
+def recommend_new():
+    try:
+        data = request.json
+        country = data.get('country')
+        city = data.get('city')
+        
+        if not country or not city:
+            return jsonify({'status': 'error', 'message': 'Country and City are required'})
+
+        recommendations = recommend_hotels(country, city)
+        if recommendations:
+            return jsonify(recommendations)
+        else:
+            return jsonify({'status': 'error', 'message': 'No hotels found for the selected location'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 
 

@@ -12,11 +12,13 @@ function HotelSearch() {
 
   const searchHotels = async () => {
     try {
+      console.log("Sending data:", { city, number, features });
       const response = await axios.post('http://localhost:5000/search_hotels', {
         city: city,
-        number: number,
+        number: Number(number),
         features: features
       });
+      console.log("Received response:", response.data);
       setSearchResults(response.data);
     } catch (error) {
       console.error("There was an error searching for hotels!", error);
@@ -39,7 +41,8 @@ function HotelSearch() {
           type="number"
           placeholder="Enter number of guests"
           value={number}
-          onChange={(e) => setNumber(e.target.value)}
+          onChange={(e) => setNumber(parseInt(e.target.value, 10) || 1)}
+
           style={{ marginRight: '10px', padding: '5px', width: '150px' }}
         />
         <input
